@@ -1,20 +1,20 @@
 import fastapi.responses
 import requests
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 
 from app.config import token
 
+# creating app
 app = FastAPI()
-print(token)
+
 # Whitelisted IPs
 WHITELISTED_IPS = ["127.0.0.1", "172.17.0.1"]
 
+# creating headers
 headers = {"Authorization": f"Bearer {token}"}
 
-response_from_wh = requests.get("https://webhook.site/4b98a881-91c1-4c92-a676-f16192d3bbcc", data="123456")
 
-
+# ip checking
 @app.middleware('http')
 async def validate_ip(request: Request, call_next):
     # Get client IP
@@ -25,7 +25,7 @@ async def validate_ip(request: Request, call_next):
         data = {
             'message': f'IP {ip} is not allowed to access this resource.'
         }
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=data)
+        return fastapi.responses.JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=data)
 
     # Proceed if IP is allowed
     return await call_next(request)
